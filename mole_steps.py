@@ -64,12 +64,19 @@ def header():
 
 def ask_skip(hint: str) -> bool:
     """Devuelve True si el usuario quiere skipear."""
-    tag = f"{GRAY}({hint}){RESET} " if hint else ""
+    if hint:
+        print(f"  {GRAY}💡 {hint}{RESET}")
+    
+    # Prompt más visual
+    prompt = f"  {BOLD}{YELLOW}s{RESET}: Skip {DIM}|{RESET} {BOLD}{GREEN}Enter{RESET}: Continuar {CYAN}»{RESET} "
+    
     try:
-        resp = input(f"  {YELLOW}→ Skip? {tag}(s/Enter para continuar): {RESET}").strip().lower()
+        resp = input(prompt).strip().lower()
     except (EOFError, KeyboardInterrupt):
         print(f"\n{RED}Interrumpido.{RESET}")
         sys.exit(1)
+    
+    print() # Línea en blanco después del input
     return resp == "s"
 
 def run_cmd(cmd: str) -> bool:
@@ -94,11 +101,12 @@ def main():
 
         if step["skippable"]:
             if ask_skip(step["skip_hint"]):
-                print(f"  {YELLOW}Skipped.{RESET}\n")
+                print(f"  {YELLOW}⏩ Skipped.{RESET}\n")
                 skipped.append(step["name"])
                 continue
+        else:
+            print() # Espacio si no hay skip prompt
 
-        print()
         ok = run_cmd(step["cmd"])
         if ok:
             print(f"\n  {GREEN}✓ Listo{RESET}\n")
